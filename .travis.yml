@@ -1,18 +1,29 @@
 language: python
 python:
-  - "3.6"
+- '3.6'
 install:
-  - python setup.py install
-  - pip install azure-storage-queue --upgrade --force-reinstall
-  - pip install pytest
+- python setup.py install
+- pip install azure-storage-queue --upgrade --force-reinstall
+- pip install pytest
 script:
-  - pytest -s -v tests/default.py
+- pytest -s -v tests/default.py
 after_success:
-  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-  - export REPO=smetj/wishbone-output-azure_queue_storage
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-  - docker build -f Dockerfile -t $REPO:$TRAVIS_COMMIT --build-arg branch=$TRAVIS_BRANCH .
-  - docker tag $REPO:$TRAVIS_COMMIT $REPO:$TAG
-  - docker tag $REPO:$TRAVIS_COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push $REPO:$TAG
-  - docker push $REPO:$TRAVIS_COMMIT
+- docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+- export REPO=smetj/wishbone-output-azure_queue_storage
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
+- docker build -f Dockerfile -t $REPO:$TRAVIS_COMMIT --build-arg branch=$TRAVIS_BRANCH
+  .
+- docker tag $REPO:$TRAVIS_COMMIT $REPO:$TAG
+- docker tag $REPO:$TRAVIS_COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+- docker push $REPO:$TAG
+- docker push $REPO:$TRAVIS_COMMIT
+notifications:
+  webhooks:
+    urls:
+    - secure: Oo5pa5ziML8SU7FI3PJUPYKotOyk6MGarm6y1s6IWucyX/E9OdOoxlExpEy0TO7kvTwMq/TRXNG0wgrjS/i4NLn4v2GzkBMG6vlibZLDYJ7uvbZ7fMkrrTtj3mbPYo/S+Zzw2MCEcpfXlJmWYSPM+5mU5eZEOlLUdrD6O6AMKglBcodvlc2/iV8LimzuV3X4worFM9GmHb6TeEH2LykbDvr4MulCJdVKi0Sducg9wEQOR3ZUPAkV3Yme7qlPz3/WnJq/yVtJwCZJkMdxd0zQ4AH6Ip+skcDuszSLNXz2g80u6JwFwMV37NBlIA8dYi+Ujr9SxbcrvBu0gzhw1rimMXIlwieMlH9gmoV0CWJx861oF/XK5O66BAtx+pTEh0+GxWNT2u9ke+fweIaFkaieC8fvYkL4ZWsgRBrBOzEjbPXhmNNSdkx7mYyBinLsTDIsVESf346iimd2mkfCDz0+fDCX1z9jBeN3kdhlnDfRxsM/6V9xMzEmpYoVw8mIeu7t3LHx6HwuelbApQoChX2vxYfAiGOs4V6YoyEGByl2CTcWsePxINma5NUCRpeD2KtFCmMmDHTuYIsjz3pgU4wJIJS1RVAu/zi7useFuggV3e3UuaLh0GzTuWh72S9Pf77mCbv0eLCq8xmspQgNqYdT0Hyj7zrGIXdHt1NXIAyrSLA=
+    on_success: always
+    on_failure: always
+    on_start: change
+    on_cancel: always
+    on_error: always
